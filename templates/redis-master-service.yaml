@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "redis-tls-example.fullname" . }}-service
+  labels:
+    {{- include "redis-tls-example.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.ports.plain.portNumber }}
+    targetPort: {{ .Values.ports.plain.portNumber }}
+    protocol: TCP
+    name: {{ .Values.ports.plain.name }}
+
+  - port: {{ .Values.ports.tls.portNumber }}
+    targetPort: {{ .Values.ports.tls.portNumber }}
+    protocol: TCP
+    name: {{ .Values.ports.tls.name }}
+    
+  selector:
+    {{- include "redis-tls-example.selectorLabels" . | nindent 4 }}
+    {{- include "redis-tls-example.redis-master-labels" . | nindent 4 }}

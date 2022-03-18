@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "redis-tls-example.fullname" . }}-{{ .Values.roleText.master }}"
+  labels:
+  {{- include "redis-tls-example.labels" . | nindent 4 }}
+  {{- include "redis-tls-example.redis-master-labels" . | nindent 4 }}
+
+spec:
+  containers:
+  - name: {{ .Chart.Name }}-{{ .Values.roleText.master }}
+    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+    imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+    ports:
+    - name: {{ .Values.ports.plain.name }}
+      containerPort: {{ .Values.ports.plain.portNumber }}
+      protocol: TCP
+    - name: {{ .Values.ports.tls.name }}
+      containerPort: {{ .Values.ports.tls.portNumber }}
+      protocol: TCP
+
+    env:
+    - name: REDIS_TLS_ENABLED
+      value: "yes"
+    - name: REDIS_TLS_PORT
+      value: {{ .Values.ports.tls.portNumber | quote }}
+    - name: REDIS_TLS_CERT_FILE
+      value: {{ .Values.paths.server_crt | quote }}
+    - name: REDIS_TLS_KEY_FILE
+      value: {{ .Values.paths.server_key | quote }}
+    - name: REDIS_TLS_CA_FILE
+      value:  {{ .Values.paths.ca_crt | quote }}
+    - name: REDIS_TLS_AUTH_CLIENTS
+      value: "yes"
+    - name: ALLOW_EMPTY_PASSWORD
+      value: "yes"
+
+    volumeMounts:
+    - name: certificates-volume
+      mountPath: {{ .Values.paths.ca_crt | quote }}
+      subPath: ca.crt
+    - name: certificates-volume
+      mountPath: {{ .Values.paths.server_crt | quote }}
+      subPath: server.crt
+    - name: certificates-volume
+      mountPath: {{ .Values.paths.server_key | quote }}
+      subPath: server.key
+
+  {{- with .Values.volumes }}
+  volumes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}

@@ -1,0 +1,5 @@
+# Insert a key using TLS port
+kubectl exec --stdin --tty {{ include "redis-tls-example.fullname" . }}-{{ .Values.roleText.client }} -- redis-cli -h test-redis-tls-example-service -p {{ .Values.ports.tls.portNumber }} --tls --cacert {{ .Values.paths.ca_crt }} --cert {{ .Values.paths.client_crt }} --key {{ .Values.paths.client_key }} set foo bar
+
+# Retrieve the key using plain port
+kubectl exec --stdin --tty {{ include "redis-tls-example.fullname" . }}-{{ .Values.roleText.client }} -- redis-cli -h test-redis-tls-example-service -p {{ .Values.ports.plain.portNumber }} get foo

@@ -1,0 +1,10 @@
+apiVersion: v2
+name: redis-tls-example
+description: Redis server-client TLS connection example using Helm security functions
+
+type: application
+
+version: 0.0.0-SNAPSHOT
+
+appVersion: "6.2.0"
+

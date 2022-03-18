@@ -1,0 +1,42 @@
+image:
+  repository: bitnami/redis
+  tag: "6.2"
+  pullPolicy: IfNotPresent
+
+ports:
+  plain:
+    name: plain
+    portNumber: 6379
+  tls:
+    name: tls
+    portNumber: 16379
+
+roleText:
+  tag: redis-role
+  master: master
+  client: client
+
+paths:
+  ca_crt: /etc/ssl/redis/ca.crt
+  client_crt: /etc/ssl/redis/client.crt
+  client_key: /etc/ssl/redis/client.key
+  server_crt: /etc/ssl/redis/server.crt
+  server_key: /etc/ssl/redis/server.key
+
+volumes:
+- name: certificates-volume
+  secret:
+    secretName: redis-tls-example-certificates-secret
+    items:
+    - key: ca.crt
+      path: ca.crt
+
+    - key: client.crt
+      path: client.crt
+    - key: client.key
+      path: client.key
+
+    - key: server.crt
+      path: server.crt
+    - key: server.key
+      path: server.key

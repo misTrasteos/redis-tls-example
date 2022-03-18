@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "redis-tls-example.fullname" . }}-{{ .Values.roleText.client }}
+  labels:
+  {{- include "redis-tls-example.labels" . | nindent 4 }}
+  {{- include "redis-tls-example.redis-client-labels" . | nindent 4 }}
+
+spec:
+  containers:
+  - name: {{ .Chart.Name }}-{{ .Values.roleText.client }}
+    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+    imagePullPolicy: {{ .Values.image.pullPolicy }}
+    command: ["sleep", "365d"]
+
+    volumeMounts:
+    - name: certificates-volume
+      mountPath: {{ .Values.paths.ca_crt | quote }}
+      subPath: ca.crt
+    - name: certificates-volume
+      mountPath: {{ .Values.paths.client_crt | quote }}
+      subPath: client.crt
+    - name: certificates-volume
+      mountPath: {{ .Values.paths.client_key | quote }}
+      subPath: client.key
+
+  {{- with .Values.volumes }}
+  volumes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
